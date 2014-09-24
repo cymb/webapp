@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+var debug = require('debug')('cymb-webapp');
+var mongoose = require('mongoose');
+var db = {};
+var fs = require('fs');
+var express = require('express');
+var path = require('path');
+
+var config = {
+	db: 'mongodb://localhost/mydb'
+}
+
+// connect mongoose
+mongoose.connect(config.db, { server: { keepAlive: 1, auto_reconnect: true } });
+var conn = mongoose.connection;
+
+// mongoose connection 'error'
+conn.on('error', function () {
+  console.log('\nMongoose failed to connect:', config.db)
+  mongoose.disconnect()
+})
+
+// mongoose connection 'open'
+conn.on('open', function () {
+  console.log('\nMongoose connection opened:', config.db);
+
+  // config mongoose models
+  var modelsPath = path.resolve(__dirname, '../app/models');
+  fs.readdirSync(modelsPath).forEach(function (file) {
+    if (file.indexOf('.js') >= 0) 
+      db[file.replace('.js', '')] = require(modelsPath + '/' + file)(mongoose, config)
+  });
+
+  var app = express();
+
+	require('../app')(app, db);
+
+	app.set('port', process.env.PORT || 3000);
+
+	var server = app.listen(app.get('port'), function() {
+	 	debug('Express server listening on port ' + server.address().port);
+	});
+
+});
