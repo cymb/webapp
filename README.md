@@ -1,4 +1,4 @@
-webapp
+Cymbidium WebApp
 ======
 
 Skeleton for Cymbidium WebApp.
