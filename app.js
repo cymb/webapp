@@ -18,6 +18,8 @@ module.exports = function(app, db){
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'app/public')));
+  app.use(express.static(path.join(__dirname, 'app/views/angular')));
+
 
   require('./routes/routes')(app, null, db);
 

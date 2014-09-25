@@ -8,11 +8,9 @@ module.exports = function (app, http, db) {
   }
 
   var u = route('users');
+  var index = route('index');
   
   app.route('/user')
-    .get(function(req,res){
-      res.send('hello');
-    })
     .post(utils.body('email password name'), utils.validPass, u.create);
 
 }
